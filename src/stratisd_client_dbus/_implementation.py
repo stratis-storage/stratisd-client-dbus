@@ -238,6 +238,8 @@ class PoolSpec(InterfaceSpec):
         """
         Name = "Name"
         Uuid = "Uuid"
+        TotalPhysicalSize = "TotalPhysicalSize"
+        TotalPhysicalUsed = "TotalPhysicalUsed"
 
     INTERFACE_NAME = 'org.storage.stratis1.pool'
 
