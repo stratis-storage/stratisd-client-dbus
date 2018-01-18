@@ -46,7 +46,6 @@ class Create2TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
-        time.sleep(1)
         self._proxy = get_object(TOP_OBJECT)
         Manager.Methods.ConfigureSimulator(self._proxy, {'denominator': 8})
 
@@ -122,7 +121,6 @@ class Create3TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
-        time.sleep(1)
         self._proxy = get_object(TOP_OBJECT)
         Manager.Methods.CreatePool(
            self._proxy,

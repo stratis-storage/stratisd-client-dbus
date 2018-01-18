@@ -47,7 +47,6 @@ class SetNameTestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
-        time.sleep(1)
         self._proxy = get_object(TOP_OBJECT)
         ((self._pool_object_path, _), _, _) = Manager.Methods.CreatePool(
            self._proxy,

@@ -22,6 +22,9 @@ import string
 import subprocess
 import time
 
+from stratisd_client_dbus import get_object
+from stratisd_client_dbus._constants import TOP_OBJECT
+
 from hypothesis import strategies
 
 _STRATISD = os.environ['STRATISD']
@@ -143,6 +146,16 @@ class ServiceR(ServiceABC):
         else:
             self._stratisd = subprocess.Popen([os.path.join(_STRATISD),
                                                '--debug'])
+        # It takes some time for the service to be ready to use, lets wait
+        # until we can talk to the dbus service before we continue, testing
+        # shows that the daemon appears to be ready in about 100ms.
+        limit = time.time() + 10.0
+        while time.time() <= limit:
+            try:
+                get_object(TOP_OBJECT)
+                break
+            except:
+                time.sleep(0.1)
 
     def tearDown(self):
         """
