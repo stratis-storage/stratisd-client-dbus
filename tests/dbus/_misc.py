@@ -123,6 +123,7 @@ class LoopBackDevices(object):
         with open(backing_file, 'ab') as bd:
             bd.truncate(size_mib * (1024 * 1024))
 
+        # pylint: disable=no-member
         result = subprocess.run([BIN, '-f', '--show', backing_file],
                                 check=True, stdout=subprocess.PIPE)
         device = str.strip(result.stdout.decode("utf-8"))
@@ -138,6 +139,7 @@ class LoopBackDevices(object):
         """
         if token in self.devices:
             (device, backing_file) = self.devices[token]
+            # pylint: disable=no-member
             subprocess.run([BIN, '-d', device], check=True)
             self.devices[token] = (None, backing_file)
 
@@ -159,11 +161,12 @@ class LoopBackDevices(object):
         """
         Attaches an existing backing file to a loop back device
         :param token: Opaque representation of some loop back device
-        :return:
+        :return: None
         """
         if token in self.devices:
             (_, backing_file) = self.devices[token]
 
+            # pylint: disable=no-member
             result = subprocess.run([BIN, '-f', '--show', backing_file],
                                     check=True, stdout=subprocess.PIPE)
             device = str.strip(result.stdout.decode("utf-8"))
@@ -180,6 +183,7 @@ class LoopBackDevices(object):
         """
         if token in self.devices:
             return self.devices[token][0]
+        return None
 
     def destroy_devices(self):
         """
@@ -188,6 +192,7 @@ class LoopBackDevices(object):
         """
         for (device, backing_file) in self.devices.values():
             if device is not None:
+                # pylint: disable=no-member
                 subprocess.run([BIN, '-d', device], check=True)
             os.remove(backing_file)
 
