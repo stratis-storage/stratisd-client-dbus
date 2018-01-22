@@ -50,7 +50,6 @@ class Destroy1TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
-        time.sleep(1)
         self._proxy = get_object(TOP_OBJECT)
         Manager.Methods.ConfigureSimulator(self._proxy, {'denominator': 8})
 
@@ -90,7 +89,6 @@ class Destroy2TestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
-        time.sleep(1)
         self._proxy = get_object(TOP_OBJECT)
         self._devices = _DEVICE_STRATEGY.example()
         Manager.Methods.CreatePool(
@@ -152,7 +150,6 @@ class Destroy3TestCase(unittest.TestCase):
         self._service = Service()
         self._service.setUp()
 
-        time.sleep(1)
         self._proxy = get_object(TOP_OBJECT)
         ((poolpath, _), _, _) = Manager.Methods.CreatePool(
            self._proxy,
@@ -192,56 +189,3 @@ class Destroy3TestCase(unittest.TestCase):
            ObjectManager.Methods.GetManagedObjects(self._proxy, {})
         (pool1, _) = next(pools(managed_objects, {'Name': self._POOLNAME}))
         self.assertEqual(pool, pool1)
-
-
-class Destroy4TestCase(unittest.TestCase):
-    """
-    Test 'destroy' on database which contains the given pool with no devices.
-    """
-    _POOLNAME = 'deadpool'
-
-    def setUp(self):
-        """
-        Start the stratisd daemon with the simulator.
-        """
-        self._service = Service()
-        self._service.setUp()
-        time.sleep(1)
-        self._proxy = get_object(TOP_OBJECT)
-        Manager.Methods.CreatePool(
-           self._proxy,
-           {
-              'name': self._POOLNAME,
-              'redundancy': (True, 0),
-              'force': False,
-              'devices': []
-           }
-        )
-        Manager.Methods.ConfigureSimulator(self._proxy, {'denominator': 8})
-
-    def tearDown(self):
-        """
-        Stop the stratisd simulator and daemon.
-        """
-        self._service.tearDown()
-
-    def testExecution(self):
-        """
-        The pool was just created and has no devices. It should always be
-        possible to destroy it.
-        """
-        managed_objects = \
-           ObjectManager.Methods.GetManagedObjects(self._proxy, {})
-        (pool, _) = next(pools(managed_objects, {'Name': self._POOLNAME}))
-
-        (result, rc, _) = \
-           Manager.Methods.DestroyPool(self._proxy, {'pool': pool})
-
-        self.assertEqual(rc, StratisdErrors.OK)
-        self.assertEqual(result, True)
-
-        managed_objects = \
-           ObjectManager.Methods.GetManagedObjects(self._proxy, {})
-        self.assertIsNone(
-           next(pools(managed_objects, {'Name': self._POOLNAME}), None)
-        )

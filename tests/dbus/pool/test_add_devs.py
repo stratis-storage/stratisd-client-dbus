@@ -34,7 +34,8 @@ _DEVICE_STRATEGY = _device_list(1)
 
 class AddDevsTestCase(unittest.TestCase):
     """
-    Test adding devices to a pool which is initially empty.
+    Test adding devices to a pool which is initially has one device, we
+    cannot have a pool without at least one device
     """
 
     _POOLNAME = 'deadpool'
@@ -45,15 +46,15 @@ class AddDevsTestCase(unittest.TestCase):
         """
         self._service = Service()
         self._service.setUp()
-        time.sleep(1)
         self._proxy = get_object(TOP_OBJECT)
+        self._devs = _DEVICE_STRATEGY.example()
         ((poolpath, _), _, _) = Manager.Methods.CreatePool(
            self._proxy,
            {
               'name': self._POOLNAME,
               'redundancy': (True, 0),
               'force': False,
-              'devices': []
+              'devices': [self._devs[0]]
            }
         )
         self._pool_object = get_object(poolpath)
@@ -89,7 +90,7 @@ class AddDevsTestCase(unittest.TestCase):
            self._pool_object,
            {
               'force': False,
-              'devices': _DEVICE_STRATEGY.example()
+              'devices': [self._devs[1]]
            }
         )
 
