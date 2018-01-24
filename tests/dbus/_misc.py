@@ -21,9 +21,13 @@ import os
 import string
 import subprocess
 
+
 from hypothesis import strategies
 
 _STRATISD = os.environ['STRATISD']
+
+SIMULATOR = 'sim'
+MODE = os.getenv('STRATIS_TEST_MODE', SIMULATOR).lower()
 
 
 def _device_list(minimum):
@@ -65,9 +69,16 @@ class ServiceR(ServiceABC):
     """
     Handle starting and stopping the Rust service.
     """
+    def __init__(self, not_sim=False):
+        super(ServiceR, self).__init__()
+        self._not_sim = not_sim
 
     def setUp(self):
-        self._stratisd = subprocess.Popen([os.path.join(_STRATISD), '--sim'])
+        if MODE == SIMULATOR and not self._not_sim:
+            self._stratisd = subprocess.Popen([os.path.join(_STRATISD), '--sim'])
+        else:
+            self._stratisd = subprocess.Popen([os.path.join(_STRATISD),
+                                               '--debug'])
 
 
 Service = ServiceR
