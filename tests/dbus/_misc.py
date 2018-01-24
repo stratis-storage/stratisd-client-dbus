@@ -40,7 +40,7 @@ def wipe_stratus_device(device):
     :param device: Block device to clear
     :return: None
     """
-    # TODO Check to see if this is a stratis device first?
+    # We may want to add a check to see if this is a stratis device first.
     with open(device, "wb") as disk:
         disk.write(ZERO_BUFFER)
 
@@ -65,6 +65,7 @@ def get_processes(cmd_search_string):
     return rc
 
 
+# pylint: disable=too-few-public-methods
 class RealDevice(object):
     """
     Offer the same API with real devices as is present for hypothesis
@@ -73,6 +74,10 @@ class RealDevice(object):
         self.device_list = devices
 
     def example(self):
+        """
+        Mimics 'example' from hypothesis
+        :return: List of devices
+        """
         return self.device_list
 
 
@@ -102,8 +107,8 @@ def ensure_no_daemon():
     # Make sure process is actually gone, sometimes it still exists!
     stratis_pids = get_processes('stratisd')
 
-    while len(stratis_pids) > 0:
-        for p, cmd in stratis_pids:
+    while stratis_pids:
+        for p, _ in stratis_pids:
             os.kill(p, 9)
         time.sleep(1)
         stratis_pids = get_processes('stratisd')
@@ -154,8 +159,9 @@ class ServiceR(ServiceABC):
 
         ensure_no_daemon()
 
-        # TODO: Need to make this more selective...
-        subprocess.call(["/usr/sbin/dmsetup", "remove_all"])
+        # This will blitz all the dmsetup config, this should be ok for now...
+        if MODE != SIMULATOR:
+            subprocess.call(["/usr/sbin/dmsetup", "remove_all"])
 
         # Clear any real devices
         for d in DEVICES:
