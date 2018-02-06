@@ -69,7 +69,7 @@ class AddDevsTestCase(unittest.TestCase):
         """
         Adding an empty list of devs should leave the pool empty.
         """
-        (result, rc, _) = Pool.Methods.AddDevs(
+        (result, rc, _) = Pool.Methods.AddBlockDevs(
            self._pool_object,
            {
               'force': False,
@@ -85,7 +85,7 @@ class AddDevsTestCase(unittest.TestCase):
         Adding a non-empty list of devs should increase the number of devs
         in the pool.
         """
-        (result, rc, _) = Pool.Methods.AddDevs(
+        (result, rc, _) = Pool.Methods.AddBlockDevs(
            self._pool_object,
            {
               'force': False,
