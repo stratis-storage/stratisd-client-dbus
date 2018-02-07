@@ -57,9 +57,9 @@ class LoopBackDevices(object):
             bd.truncate(1024**4)
 
         # pylint: disable=no-member
-        result = subprocess.run([_LOSETUP_BIN, '-f', '--show', backing_file],
-                                check=True, stdout=subprocess.PIPE)
-        device = str.strip(result.stdout.decode("utf-8"))
+        result = subprocess.check_output([_LOSETUP_BIN, '-f',
+                                          '--show', backing_file])
+        device = str.strip(result.decode("utf-8"))
         token = uuid.uuid4()
         self.devices[token] = (device, backing_file)
         return token
@@ -73,7 +73,7 @@ class LoopBackDevices(object):
         if token in self.devices:
             (device, backing_file) = self.devices[token]
             # pylint: disable=no-member
-            subprocess.run([_LOSETUP_BIN, '-d', device], check=True)
+            subprocess.check_call([_LOSETUP_BIN, '-d', device])
             self.devices[token] = (None, backing_file)
 
     def generate_udev_add_event(self, token):
@@ -100,10 +100,9 @@ class LoopBackDevices(object):
             (_, backing_file) = self.devices[token]
 
             # pylint: disable=no-member
-            result = subprocess.run([_LOSETUP_BIN, '-f', '--show',
-                                    backing_file], check=True,
-                                    stdout=subprocess.PIPE)
-            device = str.strip(result.stdout.decode("utf-8"))
+            result = subprocess.check_output([_LOSETUP_BIN, '-f', '--show',
+                                    backing_file])
+            device = str.strip(result.decode("utf-8"))
             self.devices[token] = (device, backing_file)
 
             # Make sure an add occurs
@@ -127,7 +126,7 @@ class LoopBackDevices(object):
         for (device, backing_file) in self.devices.values():
             if device is not None:
                 # pylint: disable=no-member
-                subprocess.run([_LOSETUP_BIN, '-d', device], check=True)
+                subprocess.check_call([_LOSETUP_BIN, '-d', device])
             os.remove(backing_file)
 
         self.devices = {}

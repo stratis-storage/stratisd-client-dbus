@@ -413,4 +413,4 @@ class UdevAdd(unittest.TestCase):
             self._settle()
             self.assertEqual(len(UdevAdd._get_pools()), existing_pool_count + 1)
 
-        self.assertEquals(len(UdevAdd._get_pools()), num_pools)
+        self.assertEqual(len(UdevAdd._get_pools()), num_pools)
